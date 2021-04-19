@@ -116,3 +116,5 @@ dmypy.json
 .idea
 
 .gitattributes
+
+tests.py
