@@ -17,4 +17,4 @@ def hello_name_view(name: str):
 @app.get("/counter")
 def counter():
     app.counter += 1
-    return str(app.counter)
+    return app.counter
