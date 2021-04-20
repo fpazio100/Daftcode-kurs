@@ -66,7 +66,9 @@ def method_po():
 @app.get("/auth", status_code=204)
 def haslo_hash_no(password: str, password_hash: str):
     p = hashlib.sha512(password.encode('utf-8')).hexdigest()
-    if password_hash == "" or password == "" or password_hash != p:
+    r = ''
+    r = hashlib.sha512(r.encode('utf-8')).hexdigest()
+    if password_hash == "" or password == "" or password_hash != p or password_hash == r:
         raise HTTPException(status_code=401)
 
 
