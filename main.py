@@ -40,27 +40,27 @@ def counter():
 
 @app.get("/method", status_code=200)
 def method_g():
-    return {"message": "GET"}
+    return {"method": "GET"}
 
 
 @app.put("/method", status_code=200)
 def method_p():
-    return {"message": "PUT"}
+    return {"method": "PUT"}
 
 
 @app.options("/method", status_code=200)
 def method_o():
-    return {"message": "OPTIONS"}
+    return {"method": "OPTIONS"}
 
 
 @app.delete("/method", status_code=200)
 def method_d():
-    return {"message": "DELETE"}
+    return {"method": "DELETE"}
 
 
 @app.post("/method", status_code=201)
 def method_po():
-    return {"message": "POST"}
+    return {"method": "POST"}
 
 
 @app.get("/auth", status_code=204)
