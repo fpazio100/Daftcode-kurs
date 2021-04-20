@@ -1,3 +1,4 @@
+import requests
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
@@ -78,7 +79,10 @@ def register_pac(patient: Patient):
     return patient
 
 
-@app.get("/patient/{id}", status_code=200)
-def download_pac(id: int):
-    if id < 1:
-        HTTPException(status_code=400)
+@app.get("/patient/{id}", status_code=200, response_model=Patient)
+def download_pac(id: int, name: str, surname: str, register_date: str, vaccination_date: str):
+    patient = {"id": id, "name": name, "surname": surname, "register_date": register_date, "vaccination_date": vaccination_date}
+    return patient
+
+
+
