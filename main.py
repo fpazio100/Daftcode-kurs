@@ -68,7 +68,8 @@ def haslo_hash_no(password: str, password_hash: str):
     p = hashlib.sha512(password.encode('utf-8')).hexdigest()
     r = ''
     r = hashlib.sha512(r.encode('utf-8')).hexdigest()
-    if password_hash == "" or password == "" or password_hash != p or password_hash == r:
+    if password_hash == "" or password == "" or password_hash != p or password_hash == r or password_hash is None\
+            or password is None:
         raise HTTPException(status_code=401)
 
 
