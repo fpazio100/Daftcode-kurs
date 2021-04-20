@@ -78,7 +78,8 @@ def register_pac(patient: Patient):
     app.pid += 1
     patient.id = app.pid
     patient.register_date = datetime.date.today()
-    patient.vaccination_date = datetime.date.today() + datetime.timedelta(len(patient.name) + len(patient.surname))
+    patient.vaccination_date = datetime.date.today() + \
+                               datetime.timedelta(sum(c.isalpha() for c in patient.name) + sum(c.isalpha() for c in patient.surname))
     return patient
 
 
