@@ -1,22 +1,23 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+import hashlib
 
 app = FastAPI()
 app.counter = 0
 
 
-class HelloResp(BaseModel):
-    msg: str
+class Message(BaseModel):
+    message: str
 
 
-@app.get("/")
+@app.get("/", status_code=200)
 def root_view():
     return {"message": "Hello world!"}
 
 
-@app.get("/hello/{name}", response_model=HelloResp)
+@app.get("/hello/{name}", response_model=Message)
 def hello_name_view(name: str):
-    return HelloResp(msg=f"Hello {name}")
+    return Message(message=f"Hello {name}")
 
 
 @app.get("/counter")
@@ -48,3 +49,10 @@ def method_d():
 @app.post("/method", status_code=201)
 def method_po():
     return {"message": "POST"}
+
+
+@app.get("/auth", status_code=204)
+def haslo_hash_no(password: str, password_hash: str):
+    p = hashlib.sha512(password.encode('utf-8')).hexdigest()
+    if password_hash == "" or password == "" or password_hash != p :
+        raise HTTPException(status_code=401)
