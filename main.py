@@ -1,21 +1,24 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 import hashlib
 import datetime
-from fastapi.responses import JSONResponse
 
 app = FastAPI()
 app.counter = 0
-app.id = 0
+app.pid = 0
 
 
 class Message(BaseModel):
     message: str
 
 
-class PatientIn(BaseModel):
+class Patient(BaseModel):
+    id: Optional[int] = None
     name: str
     surname: str
+    register_date: Optional[str]
+    vaccination_date: Optional[str]
 
 
 @app.get("/", status_code=200)
@@ -66,6 +69,16 @@ def haslo_hash_no(password: str, password_hash: str):
         raise HTTPException(status_code=401)
 
 
-@app.post("/register", status_code=201, response_model=PatientIn)
-def register_pac(patient: PatientIn):
-    return PatientIn(patient)
+@app.post("/register", status_code=201)
+def register_pac(patient: Patient):
+    app.pid += 1
+    patient.id = app.pid
+    patient.register_date = datetime.date.today()
+    patient.vaccination_date = datetime.date.today() + datetime.timedelta(len(patient.name) + len(patient.surname))
+    return patient
+
+
+@app.get("/patient/{id}", status_code=200)
+def download_pac(id: int):
+    if id < 1:
+        HTTPException(status_code=400)
