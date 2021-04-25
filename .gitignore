@@ -118,3 +118,7 @@ dmypy.json
 .gitattributes
 
 tests.py
+
+tests2.py
+
+tests3.py
