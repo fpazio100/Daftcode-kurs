@@ -1,13 +1,10 @@
 import requests
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response, Request, Depends, status
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict
 import hashlib
 import datetime
 
-app = FastAPI()
-app.counter = 0
-app.pid = 0
 
 
 class Message(BaseModel):
@@ -20,6 +17,12 @@ class Patient(BaseModel):
     surname: str
     register_date: Optional[str]
     vaccination_date: Optional[str]
+
+
+app = FastAPI()
+app.counter = 0
+app.pid = 0
+app.storage: Dict[int, Patient] = {}
 
 
 @app.get("/", status_code=200)
@@ -63,15 +66,17 @@ def method_po():
     return {"method": "POST"}
 
 
-@app.get("/auth", status_code=204)
-def haslo_hash_no(password: str, password_hash: str):
-    p = hashlib.sha512(password.encode('utf-8')).hexdigest()
-    r = ''
-    r = hashlib.sha512(r.encode('utf-8')).hexdigest()
-    if password_hash == "" or password == "" or password_hash != p or password_hash == r or password_hash is None\
-            or password is None or password_hash is False or password is False or password == 0 or password_hash == 0 \
-            or password_hash == password:
-        raise HTTPException(status_code=401)
+@app.get("/auth")
+def auth_request(password: str = "", password_hash: str = ""):
+    authorized = False
+    if password and password_hash:
+        phash = hashlib.sha512(bytes(password, "utf-8")).hexdigest()
+        authorized = phash == password_hash
+
+    if authorized:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    else:
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
 
 @app.post("/register", status_code=201)
@@ -80,14 +85,20 @@ def register_pac(patient: Patient):
     patient.id = app.pid
     patient.register_date = datetime.date.today()
     patient.vaccination_date = datetime.date.today() + \
-                               datetime.timedelta(sum(c.isalpha() for c in patient.name) + sum(c.isalpha() for c in patient.surname))
+                               datetime.timedelta(sum(c.isalpha() for c in patient.name) +
+                                                  sum(c.isalpha() for c in patient.surname))
+    app.storage[app.pid] = patient
     return patient
 
 
-@app.get("/patient/{id}", status_code=200, response_model=Patient)
-def download_pac(id: int, name: str, surname: str, register_date: str, vaccination_date: str):
-    patient = {"id": id, "name": name, "surname": surname, "register_date": register_date, "vaccination_date": vaccination_date}
-    return patient
+@app.get("/patient/{patient_id}", status_code=200)
+def download_pac(patient_id: int):
+    if patient_id < 1:
+        raise HTTPException(status_code=400, detail="Invali id")
+    elif patient_id not in app.storage:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    else:
+        return app.storage.get(patient_id)
 
 
 
