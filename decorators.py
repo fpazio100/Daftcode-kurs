@@ -53,14 +53,19 @@ def format_output(*args1):
     return the_real_one
 
 
-def add_class_method(C):
-    def the_real_one(met_name):
-        def met_creat(*args, **kwargs):
-            C.met_name = classmethod(C, met_name)
-        return met_creat
-    return the_real_one
+def add_class_method(Cla):
+    def true_decoration(func):
+        def robi():
+            return func()
+        setattr(Cla, func.__name__, robi)
+        return robi
+    return true_decoration
 
 
-
-
-#def add_instance_method():
+def add_instance_method(Cla):
+    def true_decoration(func):
+        def robi(*args, **kwargs):
+            return func()
+        setattr(Cla, func.__name__, robi)
+        return robi
+    return true_decoration
