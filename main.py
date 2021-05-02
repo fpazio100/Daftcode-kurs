@@ -94,7 +94,7 @@ def greet():
             <title>content-type</title>
         </head>
         <body>
-            <h1>Hello! today date is {date}</h1>
+            <h1>Hello! Today date is {date}</h1>
         </body>
     </html>
     """
