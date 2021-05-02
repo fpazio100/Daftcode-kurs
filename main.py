@@ -1,10 +1,9 @@
-import requests
-from fastapi import FastAPI, HTTPException, Response, Request, Depends, status
+from fastapi import FastAPI, HTTPException, Response, Request, status
 from pydantic import BaseModel
 from typing import Optional, Dict
 import hashlib
 import datetime
-
+from fastapi.responses import HTMLResponse
 
 
 class Message(BaseModel):
@@ -41,29 +40,14 @@ def counter():
     return str(app.counter)
 
 
-@app.get("/method", status_code=200)
-def method_g():
-    return {"method": "GET"}
+@app.api_route(path="/method", methods=["GET", "POST", "DELETE", "PUT", "OPTIONS"], status_code=200)
+def read_request(request: Request, response: Response):
+    request_method = request.method
 
+    if request_method == "POST":
+        response.status_code = status.HTTP_201_CREATED
 
-@app.put("/method", status_code=200)
-def method_p():
-    return {"method": "PUT"}
-
-
-@app.options("/method", status_code=200)
-def method_o():
-    return {"method": "OPTIONS"}
-
-
-@app.delete("/method", status_code=200)
-def method_d():
-    return {"method": "DELETE"}
-
-
-@app.post("/method", status_code=201)
-def method_po():
-    return {"method": "POST"}
+    return {"method": request_method}
 
 
 @app.get("/auth")
@@ -101,4 +85,13 @@ def download_pac(patient_id: int):
         return app.storage.get(patient_id)
 
 
-
+@app.get("/hello", response_class= HTMLResponse)
+def greet():
+    date = datetime.date.today()
+    return f"""
+    <html>
+        <body>
+        Hello! Today date is {date}
+        </body>
+    </html>
+    """
