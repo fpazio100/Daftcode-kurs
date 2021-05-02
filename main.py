@@ -89,9 +89,7 @@ def download_pac(patient_id: int):
 def greet():
     date = datetime.date.today()
     return f"""
-    <html>
-        <body>
+    <h1>
         Hello! Today date is {date}
-        </body>
-    </html>
+    </1>
     """
