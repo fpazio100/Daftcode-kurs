@@ -107,16 +107,59 @@ def greet():
 def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
     if not (credentials.username == "4dm1n") or not (credentials.password == "NotSoSecurePa$$"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    token = hashlib.sha256(f"{credentials.username}{credentials.password}secret".encode()).hexdigest()
+    session_token = hashlib.sha256(f"{credentials.username}{credentials.password}secret".encode()).hexdigest()
     app.access_tokens.append(token)
-    response.set_cookie(key="session_token", value=token)
+    response.set_cookie(key="session_token", value=session_token)
     return {"message": "Welcome"}
 
 
 @app.post("/login_token", status_code=201)
-def secured_data(*, response: Response, token: str = Cookie(None), credentials: HTTPBasicCredentials = Depends(security)):
+def token(*, response: Response, session_token: str = Cookie(None), credentials: HTTPBasicCredentials = Depends(security)):
     if not (credentials.username == "4dm1n") or not (credentials.password == "NotSoSecurePa$$"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
-        print(token)
-        return {"token": response}
+        return {"token": session_token}
+
+
+@app.get("/welcome_session")
+def w_session(*, response: Response, session_token: str = Cookie(None), format: Optional[str]):
+    if session_token not in app.access_tokens:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    else:
+        if format == "json":
+            return {"message": "Welcome!"}
+        if format == "html":
+            return """
+                <html>
+                    <head>
+                        <title></title>
+                    </head>
+                    <body>
+                        <h1>Welcome!</h1>
+                    </body>
+                </html>
+            """
+        else:
+            return "Welcome!"
+
+
+@app.get(f"/welcome_token")
+def w_token(*, response: Response, session_token: str, format: Optional[str]):
+    if session_token not in app.access_tokens:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+    else:
+        if format == "json":
+            return {"message": "Welcome!"}
+        if format == "html":
+            return """
+                <html>
+                    <head>
+                        <title></title>
+                    </head>
+                    <body>
+                        <h1>Welcome!</h1>
+                    </body>
+                </html>
+            """
+        else:
+            return "Welcome!"
