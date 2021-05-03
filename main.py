@@ -118,4 +118,4 @@ def secured_data(*, response: Response, token: str = Cookie(None)):
     if token not in app.access_tokens:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
-        return {"session_key": app.access_tokens}
+        return {"token": app.access_tokens}
