@@ -109,17 +109,17 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
     if not (credentials.username == "4dm1n") or not (credentials.password == "NotSoSecurePa$$"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     session_token = hashlib.sha256(f"{credentials.username}{credentials.password}secret".encode()).hexdigest()
-    app.access_tokens.append(session_token)
     response.set_cookie(key="session_token", value=session_token)
     return {"message": "Welcome"}
 
 
 @app.post("/login_token", status_code=201)
-def token_show(*, response: Response, session_token: str = Cookie(None), credentials: HTTPBasicCredentials = Depends(security)):
+def token_show(credentials: HTTPBasicCredentials = Depends(security)):
     if not (credentials.username == "4dm1n") or not (credentials.password == "NotSoSecurePa$$"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    else:
-        return {"token": session_token}
+    session_token = hashlib.sha256(f"{credentials.username}{credentials.password}secret".encode()).hexdigest()
+    app.access_tokens.append(session_token)
+    return {"token": session_token}
 
 
 @app.get("/welcome_session")
