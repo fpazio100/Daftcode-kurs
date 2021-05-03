@@ -64,7 +64,7 @@ def auth_request(password: str = "", password_hash: str = ""):
 
 
 @app.post("/register", status_code=201)
-def register_pac(patient: Patient):
+def register_patient(patient: Patient):
     app.pid += 1
     patient.id = app.pid
     patient.register_date = datetime.date.today()
@@ -76,7 +76,7 @@ def register_pac(patient: Patient):
 
 
 @app.get("/patient/{patient_id}", status_code=200)
-def download_pac(patient_id: int):
+def download_patient(patient_id: int):
     if patient_id < 1:
         raise HTTPException(status_code=400, detail="Invali id")
     elif patient_id not in app.storage:
@@ -98,3 +98,12 @@ def greet():
         </body>
     </html>
     """
+
+
+@app.post("/login_session", status_code=201)
+def session():
+    return
+
+@app.post("/login_token", status_code=201)
+def token():
+    return
