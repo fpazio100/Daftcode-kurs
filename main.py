@@ -110,7 +110,7 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
     token = hashlib.sha256(f"{credentials.username}{credentials.password}secret".encode()).hexdigest()
     app.access_tokens.append(token)
     response.set_cookie(key="session_token", value=token)
-    return {"message": "Welcome"}
+    return response
 
 
 @app.post("/login_token", status_code=201)
