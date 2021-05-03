@@ -105,12 +105,11 @@ def greet():
     """
 
 
-
 @app.post("/login_session")
 def login(user: str, password: str, response: Response):
     userpass = user + ":" + password
     encoded_u = base64.b64encode(userpass.encode()).decode()
-    headers = {"Authorization": "Basic %s" % encoded_u}
+#    headers = {"Authorization": "Basic %s" % encoded_u}
     response.set_cookie(key="session_token", value=encoded_u)
     return {"message": "Welcome"}
 
