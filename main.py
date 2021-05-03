@@ -124,7 +124,7 @@ def token_show(credentials: HTTPBasicCredentials = Depends(security)):
 
 @app.get("/welcome_session")
 def w_session(request: Request, *args):
-    if not app.access_tokens:
+    if request.cookies.get("session_token") != hashlib.sha256(f"4dm1nNotSoSecurePa$$secret".encode()).hexdigest():
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         if args == "json":
