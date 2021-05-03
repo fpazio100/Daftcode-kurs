@@ -110,7 +110,7 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
     token = hashlib.sha256(f"{credentials.username}{credentials.password}secret".encode()).hexdigest()
     app.access_tokens.append(token)
     response.set_cookie(key="session_token", value=token)
-    return response
+    return {"message": "Welcome"}
 
 
 @app.post("/login_token", status_code=201)
@@ -118,4 +118,4 @@ def secured_data(*, response: Response, token: str = Cookie(None)):
     if token not in app.access_tokens:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
-        return {"token": app.access_tokens}
+        return {"token": response.__getattribute__("session_token")}
