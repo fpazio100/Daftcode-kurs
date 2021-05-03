@@ -108,13 +108,13 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
     if not (credentials.username == "4dm1n") or not (credentials.password == "NotSoSecurePa$$"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     session_token = hashlib.sha256(f"{credentials.username}{credentials.password}secret".encode()).hexdigest()
-    app.access_tokens.append(token)
+    app.access_tokens.append(session_token)
     response.set_cookie(key="session_token", value=session_token)
     return {"message": "Welcome"}
 
 
 @app.post("/login_token", status_code=201)
-def token(*, response: Response, session_token: str = Cookie(None), credentials: HTTPBasicCredentials = Depends(security)):
+def token_show(*, response: Response, session_token: str = Cookie(None), credentials: HTTPBasicCredentials = Depends(security)):
     if not (credentials.username == "4dm1n") or not (credentials.password == "NotSoSecurePa$$"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
@@ -122,13 +122,13 @@ def token(*, response: Response, session_token: str = Cookie(None), credentials:
 
 
 @app.get("/welcome_session")
-def w_session(*, response: Response, session_token: str = Cookie(None), format: Optional[str]):
-    if session_token not in app.access_tokens:
+def w_session(request: Request, *args):
+    if request.user.is_authenticated:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
-        if format == "json":
+        if args == "json":
             return {"message": "Welcome!"}
-        if format == "html":
+        if args == "html":
             return """
                 <html>
                     <head>
