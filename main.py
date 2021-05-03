@@ -1,9 +1,12 @@
-from fastapi import FastAPI, HTTPException, Response, Request, status
+import requests
+from fastapi import FastAPI, HTTPException, Response, Request, status, Header, Cookie
 from pydantic import BaseModel
 from typing import Optional, Dict
 import hashlib
 import datetime
 from fastapi.responses import HTMLResponse
+from requests.auth import HTTPBasicAuth
+import base64
 
 
 class Message(BaseModel):
@@ -22,6 +25,8 @@ app = FastAPI()
 app.counter = 0
 app.pid = 0
 app.storage: Dict[int, Patient] = {}
+app.secret_key = "very constatn and random secret, best 64+ characters"
+app.access_token = base64.b64encode("4dm1n:NotSoSecurePa$$".encode()).decode()
 
 
 @app.get("/", status_code=200)
@@ -85,7 +90,7 @@ def download_patient(patient_id: int):
         return app.storage.get(patient_id)
 
 
-@app.get("/hello", response_class= HTMLResponse)
+@app.get("/hello", response_class=HTMLResponse)
 def greet():
     date = datetime.date.today()
     return f"""
@@ -100,10 +105,19 @@ def greet():
     """
 
 
-@app.post("/login_session", status_code=201)
-def session():
-    return
 
-@app.post("/login_token", status_code=201)
-def token():
-    return
+@app.post("/login_session")
+def login(user: str, password: str, response: Response):
+    userpass = user + ":" + password
+    encoded_u = base64.b64encode(userpass.encode()).decode()
+    headers = {"Authorization": "Basic %s" % encoded_u}
+    response.set_cookie(key="session_token", value=encoded_u)
+    return {"message": "Welcome"}
+
+
+@app.post("/login_token")
+def secured_data(*, response: Response, session_token: str = Cookie(None)):
+    if session_token not in app.access_token:
+        raise HTTPException(status_code=403, detail="Unathorised")
+    else:
+        return {"token": session_token}
