@@ -4,7 +4,6 @@ from typing import Optional, Dict
 import hashlib
 import datetime
 from fastapi.responses import HTMLResponse
-import base64
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 
@@ -104,7 +103,7 @@ def greet():
     """
 
 
-@app.post("/login_session")
+@app.post("/login_session", status_code=201)
 def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
     if not (credentials.username == "4dm1n") or not (credentials.password == "NotSoSecurePa$$"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
@@ -114,7 +113,7 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
     return {"message": "Welcome"}
 
 
-@app.post("/login_token")
+@app.post("/login_token", status_code=201)
 def secured_data(*, response: Response, token: str = Cookie(None)):
     if token not in app.access_tokens:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
