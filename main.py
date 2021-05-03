@@ -108,15 +108,15 @@ def greet():
 def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
     if not (credentials.username == "4dm1n") or not (credentials.password == "NotSoSecurePa$$"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-    session_token = hashlib.sha256(f"{credentials.username}{credentials.password}secret".encode()).hexdigest()
-    app.access_tokens.append(session_token)
-    response.set_cookie(key="session_token", value=session_token)
+    token = hashlib.sha256(f"{credentials.username}{credentials.password}secret".encode()).hexdigest()
+    app.access_tokens.append(token)
+    response.set_cookie(key="session_token", value=token)
     return {"message": "Welcome"}
 
 
 @app.post("/login_token")
-def secured_data(*, response: Response, session_token: str = Cookie(None)):
-    if session_token not in app.access_tokens:
+def secured_data(*, response: Response, token: str = Cookie(None)):
+    if token not in app.access_tokens:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
-        return {"token": session_token}
+        return {"token": token}
