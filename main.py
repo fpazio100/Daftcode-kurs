@@ -1,3 +1,4 @@
+import requests
 from fastapi import FastAPI, HTTPException, Response, Request, status, Depends, Cookie
 from pydantic import BaseModel
 from typing import Optional, Dict
@@ -123,7 +124,7 @@ def token_show(*, response: Response, session_token: str = Cookie(None), credent
 
 @app.get("/welcome_session")
 def w_session(request: Request, *args):
-    if request.user.is_authenticated:
+    if not app.access_tokens:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         if args == "json":
