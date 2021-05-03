@@ -114,8 +114,9 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
 
 
 @app.post("/login_token", status_code=201)
-def secured_data(*, response: Response, token: str = Cookie(None)):
-    if token not in app.access_tokens:
+def secured_data(*, response: Response, token: str = Cookie(None), credentials: HTTPBasicCredentials = Depends(security)):
+    if not (credentials.username == "4dm1n") or not (credentials.password == "NotSoSecurePa$$"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
-        return {"token": response.__getattribute__("session_token")}
+        print(token)
+        return {"token": response}
