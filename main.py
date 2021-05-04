@@ -130,16 +130,17 @@ def w_session(request: Request, *args):
         if args == "json":
             return {"message": "Welcome!"}
         if args == "html":
-            return """
-                <html>
-                    <head>
-                        <title></title>
-                    </head>
-                    <body>
-                        <h1>Welcome!</h1>
-                    </body>
-                </html>
-            """
+            return HTMLResponse("Welcome!")
+#            """
+#                <html>
+#                    <head>
+#                        <title></title>
+#                    </head>
+#                    <body>
+#                        <h1>Welcome!</h1>
+#                    </body>
+#                </html>
+#            """
         else:
             return "Welcome!"
 
