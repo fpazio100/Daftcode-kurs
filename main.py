@@ -1,5 +1,5 @@
 import requests
-from fastapi import FastAPI, HTTPException, Response, Request, status, Depends, Cookie
+from fastapi import FastAPI, HTTPException, Response, Request, status, Depends, Cookie, responses
 from pydantic import BaseModel
 from typing import Optional, Dict
 import hashlib
@@ -128,7 +128,7 @@ def w_session(request: Request, *args):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     else:
         if args == "json":
-            return {"message": "Welcome!"}
+            return responses.JSONResponse({"message": "Welcome!"})
         if args == "html":
             return HTMLResponse("Welcome!")
 #            """
@@ -142,7 +142,7 @@ def w_session(request: Request, *args):
 #                </html>
 #            """
         else:
-            return "Welcome!"
+            return responses.PlainTextResponse("Welcome!")
 
 
 @app.get(f"/welcome_token")
